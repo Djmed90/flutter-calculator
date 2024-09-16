@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expressions/expressions.dart';
+import 'dart:math';
 
 void main() {
   runApp(CalculatorApp());
@@ -34,6 +35,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         _calculateResult();
       } else if (input == 'C') {
         _clear();
+      } else if (input == '²') {
+        // Square the last number in the expression
+        _squareNumber();
+      } else if (input == '%') {
+        // Modulo operation
+        _expression += '%';
       } else {
         _expression += input;
       }
@@ -45,6 +52,22 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       _expression = '';
       _result = '';
     });
+  }
+
+  void _squareNumber() {
+    try {
+      // Parse the last number in the expression
+      final lastNumberMatch = RegExp(r'(\d+)$').firstMatch(_expression);
+      if (lastNumberMatch != null) {
+        String lastNumber = lastNumberMatch.group(1)!;
+        num squaredValue = pow(double.parse(lastNumber), 2);
+        _expression = _expression.substring(0, _expression.length - lastNumber.length) + squaredValue.toString();
+      }
+    } catch (e) {
+      setState(() {
+        _result = 'Error';
+      });
+    }
   }
 
   void _calculateResult() {
@@ -143,6 +166,12 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   _buildButton('C'),
                   _buildButton('='),
                   _buildButton('+'),
+                ],
+              ),
+              Row(
+                children: [
+                  _buildButton('²'), // Square button
+                  _buildButton('%'), // Modulo button
                 ],
               ),
             ],
